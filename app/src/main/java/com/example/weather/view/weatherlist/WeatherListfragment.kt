@@ -9,6 +9,7 @@ import android.widget.Toast
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.example.weather.databinding.FragmentWeatherListBinding
+import com.example.weather.viewmodel.AppState
 
 class WeatherListfragment : Fragment() {
 
@@ -16,27 +17,27 @@ class WeatherListfragment : Fragment() {
         fun newInstance() = WeatherListfragment()
     }
 
-    lateinit var binding : FragmentWeatherListBinding
+    lateinit var binding: FragmentWeatherListBinding
     lateinit var viewModel: WeatherListViewModel
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        binding=FragmentWeatherListBinding.inflate(inflater)
+        binding = FragmentWeatherListBinding.inflate(inflater)
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         viewModel = ViewModelProvider(this).get(WeatherListViewModel::class.java)
-        viewModel.liveData.observe(viewLifecycleOwner, object : Observer<Any>{
-            override fun onChanged(t: Any?) {
-                Toast.makeText(requireContext(), "Работает", Toast.LENGTH_LONG).
+        viewModel.liveData.observe(viewLifecycleOwner, object : Observer<AppState> {
+            override fun onChanged(t: AppState) {
+                Toast.makeText(requireContext(), "Работает $t", Toast.LENGTH_LONG).show()
             }
 
         })
-
+        viewModel.sentRequest()
     }
 
 }
