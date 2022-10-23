@@ -17,7 +17,11 @@ class WeatherListfragment : Fragment() {
         fun newInstance() = WeatherListfragment()
     }
 
-    lateinit var binding: FragmentWeatherListBinding
+   private var binding: FragmentWeatherListBinding? = null
+    override fun onDestroy() {
+        super.onDestroy()
+        binding = null
+    }
     lateinit var viewModel: WeatherListViewModel
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -25,7 +29,7 @@ class WeatherListfragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         binding = FragmentWeatherListBinding.inflate(inflater)
-        return binding.root
+        return binding!!.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -49,10 +53,10 @@ class WeatherListfragment : Fragment() {
             }
             is AppState.Success -> {
                 val result = appState.weatherData
-                binding.cityName.text = result.city.name
-                binding.temperatureValue.text = result.temperature.toString()
-                binding.feelsLikeValue.text = result.feelsLike.toString()
-                binding.cityCoordinates.text = "${result.city.lat}/${result.city.lon}"
+                binding!!.cityName.text = result.city.name
+                binding!!.temperatureValue.text = result.temperature.toString()
+                binding!!.feelsLikeValue.text = result.feelsLike.toString()
+                binding!!.cityCoordinates.text = "${result.city.lat}/${result.city.lon}"
                 //Toast.makeText(requireContext(), "Работает $result", Toast.LENGTH_LONG).show()
             }
         }
