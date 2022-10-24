@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import com.example.weather.R
 import com.example.weather.databinding.FragmentWeatherListBinding
 import com.example.weather.viewmodel.AppState
 
@@ -17,19 +18,27 @@ class WeatherListfragment : Fragment() {
         fun newInstance() = WeatherListfragment()
     }
 
-   private var binding: FragmentWeatherListBinding? = null
+    var isRussia = true
+
+    private var _binding: FragmentWeatherListBinding? = null
+    val binding: FragmentWeatherListBinding
+        get() {
+            return _binding!!
+        }
+
     override fun onDestroy() {
         super.onDestroy()
-        binding = null
+        _binding = null
     }
+
     lateinit var viewModel: WeatherListViewModel
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        binding = FragmentWeatherListBinding.inflate(inflater)
-        return binding!!.root
+    ): View {
+        _binding = FragmentWeatherListBinding.inflate(inflater)
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -42,7 +51,18 @@ class WeatherListfragment : Fragment() {
             }
 
         })
-        viewModel.sentRequest()
+
+        binding.weatherListFragmentFAB.setOnClickListener {
+            isRussia = !isRussia
+            if (isRussia) {
+                viewModel.getWheaherListForRussia()
+                binding.weatherListFragmentFAB.setImageResource(R.drawable.russian_flag)
+            } else {
+                viewModel.getWheaherListForWorld()
+                binding.weatherListFragmentFAB.setImageResource(R.drawable.worl_flag)
+            }
+        }
+        viewModel.getWheaherListForRussia()
     }
 
     private fun renderData(appState: AppState) {
@@ -51,15 +71,13 @@ class WeatherListfragment : Fragment() {
             }
             AppState.Loading -> {/*TODO*/
             }
-            is AppState.Success -> {
+            is AppState.SuccessOne -> {
                 val result = appState.weatherData
-                binding!!.cityName.text = result.city.name
-                binding!!.temperatureValue.text = result.temperature.toString()
-                binding!!.feelsLikeValue.text = result.feelsLike.toString()
-                binding!!.cityCoordinates.text = "${result.city.lat}/${result.city.lon}"
-                //Toast.makeText(requireContext(), "Работает $result", Toast.LENGTH_LONG).show()
+            }
+            is AppState.SuccessMulti -> {
+                binding.FragmentRecyclerView.adapter=WeatherListAdapter(appState.weatherList)
             }
         }
-    }
 
+    }
 }

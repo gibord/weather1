@@ -1,15 +1,10 @@
 package com.example.weather.model
 
 import com.example.weather.domain.Weather
+import com.example.weather.domain.getRussianCities
+import com.example.weather.domain.getWorldCities
 
-class RepositoryRemotelmp : Repository {
-    override fun getListWeather(): List<Weather> {
-        Thread {
-            Thread.sleep(200L)
-           // liveData.postValue(AppState.Success(Any()))
-        }.start()
-        return listOf(Weather())
-    }
+class RepositoryRemoteImpl : RepositoryOne {
 
     override fun getWeather(lat: Double, lon: Double): Weather {
         Thread {

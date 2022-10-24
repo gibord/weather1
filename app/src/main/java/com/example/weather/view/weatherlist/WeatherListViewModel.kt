@@ -3,16 +3,16 @@ package com.example.weather.view.weatherlist
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.example.weather.model.Repository
-import com.example.weather.model.RepositoryLocallmp
-import com.example.weather.model.RepositoryRemotelmp
+import com.example.weather.model.*
 import com.example.weather.viewmodel.AppState
 import java.lang.Thread.sleep
 
 class WeatherListViewModel(
-    private val liveData: MutableLiveData<AppState> = MutableLiveData<AppState>()) :
+    private val liveData: MutableLiveData<AppState> = MutableLiveData<AppState>()
+) :
     ViewModel() {
-   lateinit var repository: Repository
+    lateinit var repositoryMulti: RepositoryMany
+    lateinit var repositoryOne: RepositoryOne
     fun getLiveData(): MutableLiveData<AppState> {
         choiceRepository()
         return liveData
@@ -21,22 +21,30 @@ class WeatherListViewModel(
     private fun choiceRepository() {
         //if (isConnection()) {
         // repository = RepositoryRemotelmp()
-        repository = if (isConnection()) {
-            RepositoryRemotelmp()
+        repositoryOne = if (isConnection()) {
+            RepositoryRemoteImpl()
         } else {
             //repository = RepositoryLocallmp()
-            RepositoryLocallmp()
+            RepositoryLocalImpl()
         }
+        repositoryMulti = RepositoryLocalImpl()
     }
 
-    fun sentRequest() {
+    fun getWheaherListForRussia() {
+        sentRequest(Location.Russian)
+    }
+    fun getWheaherListForWorld() {
+        sentRequest(Location.World)
+    }
+
+    private fun sentRequest(location: Location) {
         // if (isConnection())
         liveData.value = AppState.Loading      // Пошла загрузка
         //liveData.postValue(AppState.Success(repository.getWeather(55.755826, 37.617299900000035)))
-        if ((0..3).random()==1) {
+        if (false) {
             liveData.postValue(AppState.Error(throw IllegalAccessException("печалька")))
         } else {
-            liveData.postValue(AppState.Success(repository.getWeather(55.755826, 37.617299900000035)))
+            liveData.postValue(AppState.SuccessMulti(repositoryMulti.getListWeather(location)))
         }
         /*Thread {
                 sleep(2000L)
